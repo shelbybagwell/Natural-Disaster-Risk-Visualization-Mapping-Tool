@@ -1,0 +1,4 @@
+/docker/Mysql/data/*
+.idea/*
+.env
+docker-compose.override.yml
