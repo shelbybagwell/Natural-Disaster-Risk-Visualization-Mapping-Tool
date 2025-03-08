@@ -1,4 +1,6 @@
-/docker/Mysql/data/*
+db/Mysql/data/*
+db/Mysql/mysql.sock
 .idea/*
+.vscode/*
 .env
 docker-compose.override.yml
