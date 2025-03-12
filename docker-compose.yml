@@ -1,0 +1,62 @@
+services:
+  database:
+    image: mysql:8.0
+    container_name: db_container
+    restart: always
+    environment:
+      TZ: ${TIME_ZONE}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    networks:
+      - app_network
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/Mysql/config:/etc/mysql/conf.d
+      - ./db/Mysql/data:/var/lib/mysql
+      # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql  # Initialize user
+    env_file:
+      - .env
+
+  backend:
+    build: ./backend
+    container_name: django_container
+    restart: always
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_NAME: ${DATABASE_NAME}
+      DB_USER: ${DB_ROOT_USER}
+      DB_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./backend:/app
+    networks:
+      - app_network
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
+  frontend:
+    build: ./frontend
+    container_name: angular_container
+    restart: always
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules  # Mount the local node_modules
+    networks:
+      - app_network
+    ports:
+      - "4200:4200"
+
+volumes:
+  db:
+
+networks:
+  app_network:
