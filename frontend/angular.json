@@ -27,7 +27,7 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -89,12 +89,17 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
         }
       }
+    }
+  },
+  "schematics": {
+    "@scematics/angular:component": {
+      "styleext": "scss"
     }
   },
   "cli": {
