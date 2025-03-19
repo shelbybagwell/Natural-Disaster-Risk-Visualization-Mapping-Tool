@@ -4,8 +4,8 @@ FROM node:latest
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package.json package-lock.json ./
+# Copy package files and install dependencies # package-lock.json 
+COPY package.json ./ 
 
 #ensure development environment
 ENV NODE_ENV=development
