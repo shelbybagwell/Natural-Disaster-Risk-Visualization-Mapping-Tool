@@ -12,7 +12,7 @@ COPY package.json package-lock.json  ./
 ENV NODE_ENV=development
 
 # Install other dependencies
-RUN npm ci
+RUN npm install
 
 #global install for angular & angular-devkit
 RUN npm uninstall @angular/cli
@@ -20,8 +20,6 @@ RUN npm install -g @angular/cli
 
 RUN npm uninstall @angular-devkit/build-angular
 RUN npm install -g --legacy-peer-deps --save-dev --force @angular-devkit/build-angular 
-
-RUN npm install --save-dev rollup
 
 # Copy project files
 COPY . .
