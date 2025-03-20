@@ -5,7 +5,7 @@ FROM node:latest
 WORKDIR /app
 
 # Copy package files and install dependencies # package-lock.json 
-COPY package.json ./ 
+COPY package.json package-lock.json  ./ 
 
 #ensure development environment
 ENV NODE_ENV=development
