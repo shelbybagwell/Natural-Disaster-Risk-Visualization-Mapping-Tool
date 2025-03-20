@@ -38,7 +38,9 @@ class NOAA_API_Client:
 
     def get_endpoint(self, endpoint='zones', params=None):
         """
-
+            Description:
+                This is to utilize the API, https://api.weather.gov/. There are a lot of endpoints that are accessible.
+                Use the get_api_endpoints() method to get their names and descriptions
         """
         url = f'{self.base_url}/{endpoint}'
         
