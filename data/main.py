@@ -2,6 +2,16 @@ from NOAA_API import NOAA_API_Client
 from FEMA_API import FEMA_API_Client
 
 def main():
+
+    fema = FEMA_API_Client()
+
+    #Here's the list of datasets that can be pulled from: https://www.fema.gov/about/openfema/data-sets
+    #Here are API references such as parameters and structure: https://www.fema.gov/about/openfema/api
+    #Here's the specific example below's documentation page: https://www.fema.gov/openfema-data-page/hazard-mitigation-plan-statuses-v1
+    r = fema.get_endpoint(version='v1', endpoint='HazardMitigationPlanStatuses')
+    status = r['HazardMitigationPlanStatuses']
+    print(status[0]) #print first Hazard Mitigation Plan Status
+
     noaa = NOAA_API_Client()
 
     #get api info

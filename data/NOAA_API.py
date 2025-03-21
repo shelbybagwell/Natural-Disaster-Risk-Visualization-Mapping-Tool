@@ -120,7 +120,7 @@ class NOAA_API_Client:
     def get_endpoint_v2(self, endpoint='locations', params=None):
         """
             Description:
-                This is a general method that can be used to interact with NOAA API Endpoints. It returns the response as a json oject.
+                This is a general method that can be used to interact with NOAA API v2 Endpoints. It returns the response as a json oject.
                 The json object is of a type dict and has the two keys: metadata and results. Here is a link to the documentation for
                 each endpoint: https://www.ncdc.noaa.gov/cdo-web/webservices/v2#gettingStarted
             List of endpoints:
