@@ -41,19 +41,6 @@ services:
     env_file:
       - .env
 
-  frontend:
-    build: ./frontend
-    container_name: angular_container
-    restart: always
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-    networks:
-      - app_network
-    ports:
-      - "4200:4200"
-
 volumes:
   db:
 
