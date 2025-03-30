@@ -17,7 +17,7 @@ services:
       - .env
   backend:
     build: ./backend
-    container_name: django_container
+    container_name: flask_container
     restart: always
     depends_on:
       - mongodb
@@ -27,10 +27,11 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_ROOT_USER}
       DB_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_URI: mongodb://${DB_ROOT_USER}:${DB_ROOT_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin
     networks:
       - app_network
     ports:
-      - "8000:8000"
+      - "5000:5000"
     volumes:
       - ./backend:/app
     env_file:

@@ -14,6 +14,8 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port
-EXPOSE 8000
+EXPOSE 5000
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Launch Flask
+ENTRYPOINT ["python"]
+CMD ["app.py"]

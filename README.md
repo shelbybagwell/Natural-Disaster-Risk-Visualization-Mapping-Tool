@@ -11,4 +11,14 @@ Wildfire Risk Mapping Tool - an application that ingests data from government or
      - `docker system prune -af`
      - `docker compose build --no-cache`
      - `docker compose up -d`
+
 - In the front-end folder, run `npm install` to install the necessary modules, followed by `npm start run` to serve the application
+
+- Flask documentation: 
+     - https://pypi.org/project/Flask/
+
+- Flask PyMongo documentation:
+     - https://flask-pymongo.readthedocs.io/en/latest/
+
+- PyMongo documentation: 
+      - https://pymongo.readthedocs.io/en/stable/
