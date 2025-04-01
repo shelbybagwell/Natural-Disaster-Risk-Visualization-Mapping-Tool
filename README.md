@@ -6,7 +6,4 @@ Wildfire Risk Mapping Tool - an application that ingests data from government or
 - Copy the `.env.sample` file to an `.env` file
 - From the root directory, run: 
      - `docker compose up -d --build`
-- If the front-end will not load, try running `npm install` from within the container:
-    - `docker exec -it angular_container sh`
-    - `npm cache clean --force`
-    - `npm install`
+- In the front-end folder, run `npm install` to install the necessary modules, followed by `npm start run` to serve the application
