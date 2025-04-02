@@ -1,5 +1,7 @@
 from NOAA_API import NOAA_API_Client
 from FEMA_API import FEMA_API_Client
+from ESRI_API import ESRI_API_Client
+from FIRMS_API import FIRMS_API_Client
 
 def main():
 
@@ -62,4 +64,12 @@ def main():
     first_datatype = datatypes_list[0]
     print(first_datatype)
 
+    #ESRI and #FIRMS Examples
+    es = ESRI_API_Client()
+    fi = FIRMS_API_Client()
+
+    print(fi.base_url)
+    print(fi.data_dir)
+    fi.get_data()
+   
 main()
