@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
+import { fromLonLat } from 'ol/proj';
 import OSM from 'ol/source/OSM';
 
 @Component({
@@ -25,8 +26,8 @@ export class MapContainerComponent implements OnInit, AfterViewInit {
         }),
       ],
       view: new View({
-        center: [0, 0],
-        zoom: 2,
+        center: fromLonLat([-119.4149, 36.7783]),
+        zoom: 8,
       }),
     });
   }
