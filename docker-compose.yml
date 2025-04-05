@@ -23,6 +23,7 @@ services:
       - mongodb
     environment:
       MONGO_URI: mongodb://${DB_ROOT_USER}:${DB_ROOT_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin
+      LIGHTBOX_API_KEY: ${LIGHTBOX_API_KEY}
     networks:
       - app_network
     ports:
