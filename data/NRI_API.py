@@ -33,11 +33,17 @@ class NRI_API_Client:
 
         """
             List of Endpoints:
-            General: GET {base_url}/us/{id} (default) Query for a specific national risk index records using the risk index unique 'ID.'
-            Address: GET {base_url}address/search?{params}  Query for a specific national risk index records by property address.
-            Spatial: GET {base_url}/us/geometry?wkt={POINT(long,lat)}
-                     GET {base_url}/us/geometry?wkt={LINESTRING(start_long,start_lat,end_long,end_lat)}
-                     GET {base_url}/us/geometry?wkt={POLYGON(([multiple_coordinates]))}
+
+            # General: Query for a specific national risk index records using the risk index unique 'ID.'
+            GET {base_url}/us/{id} 
+
+            # Address: Query for a specific national risk index records by property address.
+            GET {base_url}address/search?{params}  
+
+            # Spatial: Get national risk index records based on a WKT (well-known text) geometry string.
+            GET {base_url}/us/geometry?wkt={POINT(long,lat)}
+            GET {base_url}/us/geometry?wkt={LINESTRING(start_long,start_lat,end_long,end_lat)}
+            GET {base_url}/us/geometry?wkt={POLYGON(([multiple_coordinates]))}
         """
 
         try :
