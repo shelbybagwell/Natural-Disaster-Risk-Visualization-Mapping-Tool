@@ -1,5 +1,4 @@
 import requests
-import numpy as np
 
 
 class ESRI_API_Client:
@@ -32,7 +31,6 @@ class ESRI_API_Client:
         else:
             data = response.json()
             features = [feature for feature in data["features"]]
-            # print(features[0]["geometry"]["coordinates"][0][0])
 
             bound = [38.09, 32.43, -113.44, -121.50]  # N,S,E,W
             north = bound[0]
