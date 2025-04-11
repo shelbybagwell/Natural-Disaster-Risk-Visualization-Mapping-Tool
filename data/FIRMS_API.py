@@ -2,7 +2,6 @@ import io
 import requests
 import os
 import zipfile
-from fastkml import kml
 from pykml import parser
 import xml.etree.ElementTree as ET
 
