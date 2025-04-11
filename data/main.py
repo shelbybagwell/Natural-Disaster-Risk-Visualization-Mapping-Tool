@@ -82,9 +82,11 @@ def main():
 
     print(fi.base_url)
     print(fi.data_dir)
-    data = fi.get_data(
-        bounds=[38, 32, -114, -123]
+    firms_data = fi.get_data(
+        bound=[38, 32, -114, -123]
     )  # pass in coords for southern california
+
+    esri_data = es.get_data(bound=[38, 32, -114, -123])
 
 
 main()
