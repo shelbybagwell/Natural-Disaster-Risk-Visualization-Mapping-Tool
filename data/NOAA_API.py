@@ -3,7 +3,7 @@ import os
 
 class NOAA_API_Client:
     def __init__(self):
-        self.base_url = 'https://api.weather.gov/'
+        self.base_url = 'https://api.weather.gov'
         self.base_url_v2 = 'https://www.ncei.noaa.gov/cdo-web/api/v2/'
         self.api_key = os.environ.get('NOAA_ACCESS_TOKEN')
         self.headers = {
@@ -43,7 +43,7 @@ class NOAA_API_Client:
                 Use the get_api_endpoints() method to get their names and descriptions
         """
         url = f'{self.base_url}/{endpoint}'
-        
+
         if params is None:
             params = {}
 
