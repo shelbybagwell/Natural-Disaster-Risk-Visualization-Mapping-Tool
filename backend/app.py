@@ -219,6 +219,14 @@ def get_addresses_by_user(user_id):
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
+# Delete a user address by ID
+@app.route('/user/address/<id>', methods=['DELETE'])
+def delete_user_address():
+
+    try:    
+        pass
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
 
 """"
 @app.route('/test')
