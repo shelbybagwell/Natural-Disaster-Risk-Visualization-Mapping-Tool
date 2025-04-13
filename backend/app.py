@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from config import Config
 from datetime import datetime
 from bson.objectid import ObjectId
-from werkzeug.security import generate_password_hash, check_password_hash
+from helpers.user_helper import UserHelper
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,119 +18,169 @@ def home():
 @app.route('/user', methods=['POST'])
 def create_user():
 
-    data = request.get_json()
+    try: 
 
-    required_fields = ["username", "password", "email", "full_name"]
+        data = request.get_json()
 
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f'Whoops: {field} field is required'}), 400
+        required_fields = ["username", "password", "confirm_password", "email", "full_name"]
 
-    # TO DO: Validate/sanitize input
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f'Whoops: {field} field is required'}), 400
 
-    users_collection = mongo.db.users
+        # Validate/sanitize input
+        if data["username"] == '' or not UserHelper.is_valid_username(data["username"]):
+            raise Exception('Invalid username. Please use 4 to 50 characters: letters, numbers, underscores only...')
 
-    # Ensure username 
-    if users_collection.find_one({"username": data["username"]}):
-        return jsonify({"error": f'Username \'{data["username"]}\' already exists'}), 409
+        if data['full_name'] == '' or not UserHelper.is_valid_name(data['full_name']):
+            raise Exception('Invalid name. Use letters, hyphens, or apostrophes only.')
 
+        if data['email'] == '' or not UserHelper.is_valid_email(data['email']):
+            raise Exception('Invalid email.')
 
-    hashed_password = generate_password_hash(data["password"])
-    
-    User = {
-        "username": data["username"],
-        "password": hashed_password,
-        "email": data["email"],
-        "full_name": data["full_name"],
-        "created_at": datetime.now()
-    }
+        if not UserHelper.is_strong_password(data['password']):
+            raise Exception('Password must be at least 8 characters and include a combination of upper/lowercase letters, numbers and/or special characters.')
 
-    result = users_collection.insert_one(User)
-    User["_id"] = str(result.inserted_id)
+        if data['confirm_password'] != data['password']:
+            raise Exception('Passwords do not match')
 
-    if "password" in User:
-        del User["password"]  # remove password
+        users_collection = mongo.db.users
 
-    return jsonify({
-        "message": "Account created successfully", 
-        "user": User
-        }), 201
+        # Ensure username/email is unique
+        if users_collection.find_one({"username": data["username"]}):
+            raise Exception(f'Username \'{data["username"]}\' already exists')
+
+        if users_collection.find_one({"email": data["email"]}):
+            raise Exception(f'The email address provided has already been used \'{data["email"]}\'')
+
+        hashed_password = UserHelper.hash_password(data['password'])
+        
+        User = {
+            "username": data['username'],
+            "password": hashed_password,
+            "email": data['email'],
+            "full_name": data['full_name'],
+            "created_at": datetime.now()
+        }
+
+        result = users_collection.insert_one(User)
+        User["_id"] = str(result.inserted_id)
+
+        User = UserHelper.sanitize_user_object(User)
+
+        return jsonify({
+            "message": "Account created successfully", 
+            "user": User
+            }), 201
+
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
 
 # Fetch a user account by username
 @app.route('/users/<username>', methods=['GET'])
 def get_user_by_username(username):
 
-    users_collection = mongo.db.users
+    try:
 
-    User = users_collection.find_one({"username": username})
+        users_collection = mongo.db.users
 
-    if not User:
-        return jsonify({"error": "User not found"}), 404
+        User = users_collection.find_one({"username": username})
 
-    User["_id"] = str(User["_id"]) # Needed to make Object serializable
+        if not User:
+            raise Exception('User not found')
 
-    if "password" in User:
-        del User["password"]  # remove password
+        User["_id"] = str(User["_id"]) # Needed to make Object serializable
 
-    return jsonify(User), 200
+        User = UserHelper.sanitize_user_object(User)
+
+        return jsonify(User), 200
+    
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
 
 # Fetch a user account by ID
 @app.route('/users/id/<id>', methods=['GET'])
 def get_user_by_id(id):
 
-    users_collection = mongo.db.users
+    try:
 
-    User = users_collection.find_one({"_id": ObjectId(id)})
+        users_collection = mongo.db.users
 
-    if not User:
-        return jsonify({"error": "User not found"}), 404
+        User = users_collection.find_one({"_id": ObjectId(id)})
 
-    User["_id"] = str(User["_id"]) # Needed to make Object serializable
+        if not User:
+            raise Exception('User not found')
 
-    if "password" in User:
-        del User["password"]  # remove password
+        User["_id"] = str(User["_id"]) # Needed to make Object serializable
 
-    return jsonify(User), 200
+        User = UserHelper.sanitize_user_object(User)
+
+        return jsonify(User), 200
+
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
 
 
 # Update a user by ID
 @app.route('/users/id/<id>', methods=['PUT'])
 def update_user(id):
 
-    data = request.get_json()
+    try:
 
-    users_collection = mongo.db.users
+        data = request.get_json()
 
-    user = users_collection.find_one({"_id": ObjectId(id)})
+        users_collection = mongo.db.users
 
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+        user = users_collection.find_one({"_id": ObjectId(id)})
 
-    updates = {}
+        if not user:
+            raise Exception('User not found')
 
-    # TO DO: add validation here
+        updates = {}
 
-    for field in ["email", "full_name", "password"]:
-        if field in data:
-            if field == "password":
-                updates[field] = generate_password_hash(data[field]) 
-            else: 
-                updates[field] = data[field]
+        # Validation input
+        if "password" in data:
 
-    if updates:
-        users_collection.update_one(
-            {"_id": ObjectId(id)}, 
-            {"$set": updates}
-        )
-    
-    User = users_collection.find_one({"_id": ObjectId(id)})
+            if not UserHelper.is_strong_password(data["password"]):
+                raise Exception('Password must be at least 8 characters and include a combination of upper/lowercase letters, numbers and/or special characters.')
 
-    User["_id"] = str(User["_id"])
+            if data['confirm_password'] != data["password"]:
+                raise Exception('Passwords do not match')
 
-    if "password" in User:
-        del User["password"]  # remove password
+            updates["password"] = UserHelper.hash_password(data["password"]) 
 
-    return jsonify(User), 200
+        if "full_name" in data:
+
+            if not UserHelper.is_valid_name(data['full_name']):
+                raise Exception('Invalid name. Use letters, hyphens, or apostrophes only.')
+            
+            updates["full_name"] = data["full_name"]
+
+        if "email" in data:
+
+            if not UserHelper.is_valid_email(data['email']):
+                raise Exception('Invalid email.')
+            
+            updates["email"] = data["email"]
+
+        if updates:
+            users_collection.update_one(
+                {"_id": ObjectId(id)}, 
+                {"$set": updates}
+            )
+        
+        User = users_collection.find_one({"_id": ObjectId(id)})
+
+        User["_id"] = str(User["_id"])
+
+        User = UserHelper.sanitize_user_object(User)
+
+        return jsonify(User), 200
+
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
 
 """"
 @app.route('/test')
