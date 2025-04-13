@@ -40,6 +40,7 @@ class ESRI_API_Client:
             kept_features = []
             for feature in features:
                 coords = feature["geometry"]["coordinates"][0]
+                coords = [c for c in coords if len(c) == 2]
                 lons, lats = zip(*coords)
                 min_lon = min(lons)
                 max_lon = max(lons)
