@@ -12,7 +12,7 @@ mongo = PyMongo(app)  # Initialize MongoDB connection
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Flask connected to MongoDB!"})
+    return jsonify({"message": ""})
 
 # Create a new user account
 @app.route('/user', methods=['POST'])
@@ -181,6 +181,44 @@ def update_user(id):
 
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
+
+
+# Create a new user address
+@app.route('/user/address', methods=['POST'])
+def create_user_address():
+
+    try:    
+        pass
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
+# Update a user address by ID
+@app.route('/user/address/<id>', methods=['PUT'])
+def update_user_address(id):
+
+    try:    
+        pass
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
+# Fetch a user address by address ID
+@app.route('/user/address/<id>', methods=['GET'])
+def get_user_address_by_id(id):
+
+    try:
+        pass
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
+# Fetch a list of user addresses by user ID
+@app.route('/user/addresses/<user_id>', methods=['GET'])
+def get_addresses_by_user(user_id):
+
+    try:
+        pass
+    except Exception as ex:
+        return jsonify({"error": "%s" % ex}), 400
+
 
 """"
 @app.route('/test')
