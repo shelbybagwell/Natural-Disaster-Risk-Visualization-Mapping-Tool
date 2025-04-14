@@ -5,12 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapContainerComponent } from './components/maps/map-container/map-container.component';
 import { OpenLayerMapComponent } from './components/maps/open-layer-map/open-layer-map.component';
+import { AddressFormComponent } from './components/shared/address-form/address-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapContainerComponent,
-    OpenLayerMapComponent
+    OpenLayerMapComponent,
+    AddressFormComponent
   ],
   imports: [
     BrowserModule,
