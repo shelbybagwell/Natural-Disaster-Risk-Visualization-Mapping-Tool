@@ -1,0 +1,56 @@
+#mapsContainer {
+  width: 85%;
+}
+
+.map {
+  margin-bottom: 8em;
+}
+
+.searchContainer {
+  h2 {
+    text-align: center;
+    padding: 1em;
+    width: 100%
+  }
+}
+
+.search {
+  margin: 2em;
+  padding: 2em;
+  border: .25em solid darkgrey;
+  border-radius: 2em;
+  width: 80%;
+}
+
+
+@media only screen and (min-width: 700px) {
+
+  #mapsContainer {
+    padding: 2em;
+    width: 90%;
+  }
+
+  .map {
+    width: 50%;
+    float: left;
+  }
+
+  .searchContainer {
+    width: 45%;
+    float: right;
+    h2 {
+      text-align: center;
+    }
+    margin: 1em;
+  }
+
+
+  .search {
+    margin: 2em;
+    padding: 2em;
+    border: .25em solid darkgrey;
+    border-radius: 2em;
+    width: 100%;
+  }
+
+}
