@@ -63,8 +63,11 @@ class NOAA_API_Client:
             properties = z['properties']
             id = properties['id']
             st = properties['state']
-            if st == state:
-                state_zones.append(id)
+            if st == state and properties['type'] == 'fire':
+                state_zones.append({
+                        'zone_id': id,
+                        'name': properties['name']
+                    })
 
         return state_zones
 
@@ -77,7 +80,11 @@ class NOAA_API_Client:
         alert_info = self.get_endpoint(endpoint=f'alerts/active/zone/{zone_id}')
 
         if alert_info['features'] == []:
-            return f'{zone_id}: No Alerts, Last Updated: ' + alert_info['updated']
+            return {
+                    'zone_id': zone_id,
+                    'response': 'No Alerts',
+                    'last_update': str(alert_info['updated'])
+            }
         else:
             alerts = []
             for i in alert_info['features']:
