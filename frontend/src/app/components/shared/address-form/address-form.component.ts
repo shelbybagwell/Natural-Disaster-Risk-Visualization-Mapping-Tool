@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Address } from '../../../interfaces/address';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-address-form',
@@ -10,12 +10,26 @@ import { FormGroup } from '@angular/forms';
 })
 export class AddressFormComponent {
   addressForm!: FormGroup;
-  address!: Address;
+  fb = inject(FormBuilder);
 
-  lookUp(entry: Address){
+  constructor() {
+    this.addressForm = this.fb.group({
+      streetAddress: ['', [Validators.required]],
+      city: ['', []],
+      state: ['', []],
+      zip: ['', [Validators.required]]
+    });
+  }
+
+  lookUp(entry: FormGroup){
     console.log(entry);
+    alert("This will get coordinates and pass them to the map");
     //code to call API service
   }
 
-  cancel(){}
+  save(entry: Address){}
+
+  cancel(){
+    this.addressForm.reset();
+  }
 }

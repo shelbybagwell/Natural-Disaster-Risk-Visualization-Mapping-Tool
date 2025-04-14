@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { AddressFormComponent } from '../../shared/address-form/address-form.component';
 
 
 @Component({

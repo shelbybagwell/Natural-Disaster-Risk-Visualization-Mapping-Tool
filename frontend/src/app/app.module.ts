@@ -11,6 +11,10 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu';
 import { OpenLayerMapComponent } from './components/maps/open-layer-map/open-layer-map.component';
 import { AddressFormComponent } from './components/shared/address-form/address-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -26,7 +30,11 @@ import { AddressFormComponent } from './components/shared/address-form/address-f
     BrowserModule,
     AppRoutingModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
