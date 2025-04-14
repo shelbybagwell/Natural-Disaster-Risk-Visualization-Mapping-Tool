@@ -1,0 +1,33 @@
+button {
+  margin: 1em;
+}
+
+.btnCancel {
+  background-color: darkred;
+  color: whitesmoke;
+}
+
+.btnSearch {
+  background-color: darkcyan;
+  color: whitesmoke;
+}
+
+.addressFormContainer mat-form-field {
+  margin-right: 2em;
+}
+
+.streetAddress {
+  width: 100%;
+}
+
+.state {
+  width: 12%;
+}
+
+.city {
+  width: 42%;
+}
+
+.zip {
+  width: 30%;
+}
