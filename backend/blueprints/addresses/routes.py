@@ -149,7 +149,6 @@ def search():
                 data['name'] = c['name']
                 alerts.append(data)
 
-            user_query = request.form.get('query')
             return jsonify({
                 'full_address': strAddress,
                 'street_address': street_address,
