@@ -3,3 +3,5 @@ Flask-PyMongo==2.3.0
 pymongo==4.11.3
 python-dotenv==1.0.1
 requests
+geopy
+pykml

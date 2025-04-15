@@ -9,15 +9,13 @@ import sys, os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 sys.path.append(project_root)
 
-from data.FIRMS_API import FIRMS_API_Client
-from data.NOAA_API import NOAA_API_Client
-
-
+from api.FIRMS_API import FIRMS_API_Client
+from api.NOAA_API import NOAA_API_Client
 
 addresses_blueprint = Blueprint('addresses', __name__)
 
 # Create a new user address
-@addresses_blueprint.route('/', methods=['POST'])
+@addresses_blueprint.route('/user/<user_id>', methods=['POST'])
 def create_user_address(user_id):
 
     try:    
@@ -73,7 +71,7 @@ def get_user_address_by_id(id):
         return jsonify({"error": "%s" % ex}), 400
 
 # Fetch a list of user addresses by user ID
-@addresses_blueprint.route('/list', methods=['GET'])
+@addresses_blueprint.route('/list/user/<user_id>', methods=['GET'])
 def get_addresses_by_user(user_id):
 
     try:
@@ -124,6 +122,7 @@ def search():
             lat = location.latitude
 
             #add db insert/check here for user if logged in
+        
 
             #fire features nearby from FIRMS Api
             f = FIRMS_API_Client()
