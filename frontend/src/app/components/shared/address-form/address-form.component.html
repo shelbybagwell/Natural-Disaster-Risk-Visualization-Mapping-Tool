@@ -1,0 +1,30 @@
+<div class="addressFormContainer">
+  <form mat-form class="addressForm" (ngSubmit)="lookUp(addressForm)" [formGroup]="addressForm">
+    <mat-form-field class="streetAddress" appearance="fill">
+      <mat-label>Address</mat-label>
+      <input matInput maxlength="46" type="text" formControlName="streetAddress" required>
+    </mat-form-field>
+
+    <mat-form-field class="city">
+      <mat-label>City</mat-label>
+      <input matInput maxlength="35" type="text" formControlName="city">
+    </mat-form-field>
+
+    <mat-form-field class="state">
+      <mat-label>State</mat-label>
+      <input matInput maxlength="2" type="text" formControlName="state">
+    </mat-form-field>
+
+    <mat-form-field class="zip">
+      <mat-label>Zip</mat-label>
+      <input matInput maxlength="10" type="text" formControlName="zip" required>
+    </mat-form-field>
+    
+    <p>* Fields are Required</p>
+
+    <div class="action-buttons">
+      <button mat-raised-button class="btnSearch" type="submit" (click)="lookUp(addressForm)">Search</button>
+      <button mat-raised-button class="btnCancel" type="reset" (click)="cancel()">Cancel</button>
+    </div>
+  </form>
+</div>
