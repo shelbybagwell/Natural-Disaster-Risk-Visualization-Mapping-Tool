@@ -12,7 +12,8 @@ export class ConfigurationService {
 
   getConfig() {
     configJSON.map(item => {
-      apiBaseUrl: item.localConfig.apiBaseUrl
-    })
+      this.config.apiBaseUrl = item.localConfig.apiBaseUrl
+    });
+    return this.config;
   }
 }
