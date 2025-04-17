@@ -23,7 +23,7 @@ describe('OpenLayerMapComponent', () => {
   });
 
   describe('create map in afterViewInit', () => {
-    it('should create a map when ngAfterViewInit is called on load', () => {
+    it('should create a map on load', () => {
       expect(component.map).toBeTruthy();
     });
 

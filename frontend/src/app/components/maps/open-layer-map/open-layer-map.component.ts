@@ -32,6 +32,5 @@ export class OpenLayerMapComponent {
         zoom: 8,
       }),
     });
-    console.log(this.map.getView().getCenter());
   }
 }
