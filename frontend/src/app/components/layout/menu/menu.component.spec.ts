@@ -34,4 +34,32 @@ describe('MenuComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('open menu', () => {
+    it('should call openMenu on the trigger when called', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+  });
+
+  describe('view Map', () => {
+    it('should take users to "/" or map component when called', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+
+    it('should be disabled when on the maps component', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+  });
 });
