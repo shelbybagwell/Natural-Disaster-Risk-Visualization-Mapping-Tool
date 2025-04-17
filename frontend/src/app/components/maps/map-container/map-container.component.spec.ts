@@ -7,6 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { OpenLayerMapComponent } from '../open-layer-map/open-layer-map.component';
+import { AddressFormComponent } from '../../shared/address-form/address-form.component';
 
 describe('MapContainerComponent', () => {
   let component: MapContainerComponent;
@@ -22,7 +24,11 @@ describe('MapContainerComponent', () => {
         MatButtonModule,
         ReactiveFormsModule,
       ],
-      declarations: [MapContainerComponent]
+      declarations: [
+        MapContainerComponent,
+        OpenLayerMapComponent,
+        AddressFormComponent
+      ]
     })
     .compileComponents();
 
