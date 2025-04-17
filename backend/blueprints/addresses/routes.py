@@ -43,11 +43,71 @@ def create_user_address(user_id):
         if data["street_2"]:
             if not AddressHelper.is_valid_street(data["street_2"]):
                 raise Exception('Please limit each street address to 100 characters')
+        else:
+            data["street_2"] = ""
 
-        # TO DO: complete validation and save address to DB
+        if data["city"] == '' :
+            raise Exception('City is required.')
+        elif not AddressHelper.is_valid_city(data["city"]):
+            raise Exception('Please provide a valid city')
+
+        if data["state"] == '' :
+            raise Exception('State is required.')
+        elif not AddressHelper.is_valid_state(data["state"]):
+            raise Exception('Please provide a valid state')
+
+        if data["zip"] == '' :
+            raise Exception('Zip Code is required.')
+        elif not AddressHelper.is_valid_zip_code(data["zip"]):
+            raise Exception('Please provide a valid zip code')
+        
+        if data["address_name"] == '' :
+            raise Exception('Address Name is required.')
+        elif not AddressHelper.is_valid_zip_code(data["zip"]):
+            raise Exception('Please provide a valid name for this address')
+
+        if data["is_primary"] == 1:
+            data["is_primary"] = True
+        else:
+            data["is_primary"] == False
+
+        # Addresses will be limited to US for now 
+        data["country"] = 'US'
+
+        # TO DO: validate address by converting to lat/long coordinates
+        strAddress = data["street_1"] + data["street_2"] + ', ' + data["city"] + ', ' + data["state"] + ' ' + data["zip"]
+        geolocator = Nominatim(user_agent='user_address')
+        location = geolocator.geocode(strAddress)
+        longitude = location.longitude
+        latitude = location.latitude
+
+        if not AddressHelper.is_valid_lat_long(latitude, longitude):
+            raise Exception('Unable to validate this address')
+
         mongo = current_app.mongo
         address_collection = mongo.db.users
 
+        Address = {
+            "user_id": user_id,
+            "street_1": data["street_1"],
+            "street_2": data["street_2"],
+            "city": data["city"],
+            "state": data["state"],
+            "zip": data["zip"],
+            "latitude" : latitude, 
+            "longitude" : longitude, 
+            "address_name": data["address_name"],
+            "is_primary": data["is_primary"], # Enforce one address as primary?
+            "created_at": datetime.now()
+        }
+
+        result = address_collection.insert_one(Address)
+        Address["_id"] = str(result.inserted_id)
+
+        return jsonify({
+            "message": "Address created successfully", 
+            "user": Address
+            }), 201
 
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
@@ -57,7 +117,12 @@ def create_user_address(user_id):
 def update_user_address(id):
 
     try:    
-        pass
+
+        data = request.get_json()
+
+        if not id:
+            raise Exception('Invalid Address ID')
+        
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
@@ -66,7 +131,12 @@ def update_user_address(id):
 def get_user_address_by_id(id):
 
     try:
-        pass
+
+        data = request.get_json()
+
+        if not id:
+            raise Exception('Invalid Address ID')
+
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
@@ -75,7 +145,10 @@ def get_user_address_by_id(id):
 def get_addresses_by_user(user_id):
 
     try:
-        pass
+
+        if not user_id:
+            raise Exception('Invalid User ID')
+
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
@@ -84,7 +157,12 @@ def get_addresses_by_user(user_id):
 def delete_user_address():
 
     try:    
-        pass
+
+        data = request.get_json()
+
+        if not id:
+            raise Exception('Invalid Address ID')
+        
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
     
