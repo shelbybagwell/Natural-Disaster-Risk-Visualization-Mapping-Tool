@@ -4,3 +4,4 @@ db/Mysql/mysql.sock
 .vscode/*
 .env
 docker-compose.override.yml
+*.cpython*

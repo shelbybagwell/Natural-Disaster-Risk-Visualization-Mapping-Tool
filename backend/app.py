@@ -16,14 +16,12 @@ mongo = PyMongo(app)  # Initialize MongoDB connection
 # Make Mongo accessible to blueprints
 app.mongo = mongo
 
+app.register_blueprint(users_blueprint, url_prefix="/users")
+app.register_blueprint(addresses_blueprint, url_prefix="/addresses")
+
 @app.route('/')
 def home():
     return jsonify({"message": ""})
-
-
-app.register_blueprint(users_blueprint, url_prefix="/users")
-app.register_blueprint(addresses_blueprint, url_prefix="/user/<user_id>/addresses")
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
