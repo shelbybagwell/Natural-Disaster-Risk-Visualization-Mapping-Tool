@@ -38,20 +38,22 @@ describe('MenuComponent', () => {
   describe('open menu', () => {
     it('should call openMenu on the trigger when called', () => {
       //arrange
-
+      spyOn(component.trigger, 'openMenu');
       //act
-
+      component.openMenu();
       //assert
+      expect(component.trigger.openMenu).toHaveBeenCalled();
     });
   });
 
   describe('view Map', () => {
     it('should take users to "/" or map component when called', () => {
       //arrange
-
+      spyOn(component.router, 'navigateByUrl');
       //act
-
+      component.viewMap();
       //assert
+      expect(component.router.navigateByUrl).toHaveBeenCalledWith('/');
     });
 
     it('should be disabled when on the maps component', () => {
