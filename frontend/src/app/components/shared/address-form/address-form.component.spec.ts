@@ -30,4 +30,58 @@ describe('AddressFormComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('look up button', () => {
+    it('should call the api service and pass in address information', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+
+    it('should be disabled if address form not valid', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+  });
+
+  describe('save button', () => {
+    it('should call api service to save address if user logged in', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+
+    it('should be disabled if user not logged in', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+  });
+
+  describe('cancel button', () => {
+    it('should reset the form when cancel button is called', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+
+    it('should be disabled if form is clean', () => {
+      //arrange
+
+      //act
+
+      //assert
+    });
+  });
 });
