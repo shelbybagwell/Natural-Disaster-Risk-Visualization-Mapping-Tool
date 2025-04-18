@@ -3,7 +3,7 @@ import os
 
 class NOAA_API_Client:
     def __init__(self):
-        self.base_url = 'https://api.weather.gov/'
+        self.base_url = 'https://api.weather.gov'
         self.base_url_v2 = 'https://www.ncei.noaa.gov/cdo-web/api/v2/'
         self.api_key = os.environ.get('NOAA_ACCESS_TOKEN')
         self.headers = {
@@ -43,7 +43,7 @@ class NOAA_API_Client:
                 Use the get_api_endpoints() method to get their names and descriptions
         """
         url = f'{self.base_url}/{endpoint}'
-        
+
         if params is None:
             params = {}
 
@@ -63,8 +63,11 @@ class NOAA_API_Client:
             properties = z['properties']
             id = properties['id']
             st = properties['state']
-            if st == state:
-                state_zones.append(id)
+            if st == state and properties['type'] == 'fire':
+                state_zones.append({
+                        'zone_id': id,
+                        'name': properties['name']
+                    })
 
         return state_zones
 
@@ -77,7 +80,11 @@ class NOAA_API_Client:
         alert_info = self.get_endpoint(endpoint=f'alerts/active/zone/{zone_id}')
 
         if alert_info['features'] == []:
-            return f'{zone_id}: No Alerts, Last Updated: ' + alert_info['updated']
+            return {
+                    'zone_id': zone_id,
+                    'response': 'No Alerts',
+                    'last_update': str(alert_info['updated'])
+            }
         else:
             alerts = []
             for i in alert_info['features']:

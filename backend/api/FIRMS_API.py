@@ -220,11 +220,7 @@ class FIRMS_API_Client:
             data = self.get_file_data(root)
             footprint_time_range = []
             footprints = []
-            # split up the bounds for easier reading
-            north = bound[0]
-            south = bound[1]
-            east = bound[2]
-            west = bound[3]
+
             for datum in data:
                 if "Footprints" in datum["name"]:
                     # only pull footprints, not points
@@ -236,8 +232,10 @@ class FIRMS_API_Client:
                     # this is actually where the meat of the data is
                     lat = float(pm["description"]["Latitude"])
                     lon = float(pm["description"]["Longitude"])
-                    if (lat > south and lat < north) and (lon > west and lon < east):
-                        # we only want footprints that fall within the bounding box
+
+                    #bound box format is [[x, y], [x, y]]
+                    if lat < bound[0] and lon > bound[1] and lat > bound[2] and lon < bound[3]:
                         footprints.append(pm)
+
             # returns list of JSON objects containing the data
             return footprints

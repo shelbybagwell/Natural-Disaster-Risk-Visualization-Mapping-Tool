@@ -136,9 +136,9 @@ def update_user(id):
         mongo = current_app.mongo
         users_collection = mongo.db.users
 
-        user = users_collection.find_one({"_id": ObjectId(id)})
+        User = users_collection.find_one({"_id": ObjectId(id)})
 
-        if not user:
+        if not User:
             raise Exception('User not found')
 
         updates = {}
@@ -174,8 +174,6 @@ def update_user(id):
                 {"$set": updates}
             )
         
-        User = users_collection.find_one({"_id": ObjectId(id)})
-
         User["_id"] = str(User["_id"])
 
         User = UserHelper.sanitize_user_object(User)
