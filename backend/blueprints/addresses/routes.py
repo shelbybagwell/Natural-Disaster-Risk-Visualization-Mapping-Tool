@@ -64,19 +64,17 @@ def create_user_address(user_id):
         
         if data["address_name"] == '' :
             raise Exception('Address Name is required')
-        elif not AddressHelper.is_valid_zip_code(data["zip"]):
+        elif not AddressHelper.is_valid_address_name(data["address_name"]):
             raise Exception('Please provide a valid name for this address')
 
-        if data["is_primary"] == 1:
-            data["is_primary"] = True
-        else:
-            data["is_primary"] == False
+        # Cast primary to boolean value
+        data["is_primary"] = bool(data["is_primary"])
 
         # Addresses will be limited to US for now 
         data["country"] = 'USA'
 
-        # TO DO: validate address by converting to lat/long coordinates
-        strAddress = data["street_1"] + data["street_2"] + ', ' + data["city"] + ', ' + data["state"] + ' ' + data["zip"]
+        # Validate address by converting to lat/long coordinates
+        strAddress = AddressHelper.toString(data)
         geolocator = Nominatim(user_agent='user_address', timeout=5)
         location = geolocator.geocode(strAddress)
 
@@ -90,7 +88,7 @@ def create_user_address(user_id):
             raise Exception('Unable to validate this address')
 
         mongo = current_app.mongo
-        address_collection = mongo.db.users
+        address_collection = mongo.db.addresses
 
         Address = {
             "user_id": user_id,
@@ -131,6 +129,78 @@ def update_user_address(id):
         if not id:
             raise Exception('Invalid Address ID')
         
+        mongo = current_app.mongo
+        address_collection = mongo.db.addresses
+
+        Address = address_collection.find_one({"_id": ObjectId(id)})
+
+        if not Address:
+            raise Exception('Address not found')
+
+        if "street_1" in data:
+
+            if not AddressHelper.is_valid_street(data['street_1']):
+                raise Exception('Please limit each street address to 100 characters')
+            
+            Address["street_1"] = data["street_1"]
+
+        if "street_2" in data:
+
+            if not AddressHelper.is_valid_street(data['street_2']):
+                raise Exception('Please limit each street address to 100 characters')
+            
+            Address["street_2"] = data["street_2"]
+
+        if "city" in data:
+
+            if not AddressHelper.is_valid_city(data['city']):
+                raise Exception('Please provide a valid city')
+            
+            Address["city"] = data["city"]
+
+        if "zip" in data:
+
+            if not AddressHelper.is_valid_zip_code(data['zip']):
+                raise Exception('Please provide a valid zip code')
+            
+            Address["zip"] = data["zip"]
+
+        if "address_name" in data:
+
+            if not AddressHelper.is_valid_address_name(data['address_name']):
+                raise Exception('Please provide a valid zip code')
+            
+            Address["address_name"] = data["address_name"]
+
+        if "is_primary" in data:            
+            Address["is_primary"] = bool(data["is_primary"])
+
+        # Validate address by converting to lat/long coordinates
+        strAddress = AddressHelper.toString(Address)
+        geolocator = Nominatim(user_agent='user_address', timeout=5)
+        location = geolocator.geocode(strAddress)
+
+        if (location is None):
+            raise Exception('Unable to verify this address')
+
+        Address["longitude"] = location.longitude
+        Address["latitude"] = location.latitude
+
+        if not AddressHelper.is_valid_lat_long(Address["latitude"], Address["longitude"]):
+            raise Exception('Unable to validate this address')
+
+        address_collection.update_one(
+            {"_id": ObjectId(id)}, 
+            {"$set": Address}
+        )
+
+        Address["_id"] = str(Address["_id"])
+
+        return jsonify({
+            "message": "Address updated successfully", 
+            "address": Address
+            }), 200
+
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
@@ -139,14 +209,25 @@ def update_user_address(id):
 def get_user_address_by_id(id):
 
     try:
-
+        
         data = request.get_json()
 
         if not id:
             raise Exception('Invalid Address ID')
+        
+        mongo = current_app.mongo
+        address_collection = mongo.db.addresses
+
+        Address = address_collection.find_one({"_id": ObjectId(id)})
+
+        if not Address:
+            raise Exception('Address not found')
+        
+        return jsonify({"address": Address}), 200
 
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
+
 
 # Fetch a list of user addresses by user ID
 @addresses_blueprint.route('/list/user/<user_id>', methods=['GET'])
@@ -157,12 +238,25 @@ def get_addresses_by_user(user_id):
         if not user_id:
             raise Exception('Invalid User ID')
 
+        mongo = current_app.mongo
+        address_collection = mongo.db.addresses
+
+        addresses = list(address_collection.find({"user_id": ObjectId(user_id)}))
+
+        # Convert ObjectId fields to strings for JSON serialization
+        if addresses:
+            for addr in addresses:
+                addr["_id"] = str(addr["_id"])
+                addr["user_id"] = str(addr["user_id"])
+
+        return jsonify({"data": addresses}), 200
+
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
 # Delete a user address by ID
 @addresses_blueprint.route('/<id>', methods=['DELETE'])
-def delete_user_address():
+def delete_user_address(id):
 
     try:    
 
@@ -170,6 +264,16 @@ def delete_user_address():
 
         if not id:
             raise Exception('Invalid Address ID')
+
+        mongo = current_app.mongo
+        address_collection = mongo.db.addresses
+        
+        result = address_collection.delete_one({"_id": ObjectId(id)})
+
+        if result.deleted_count == 0:
+            raise Exception('Address not found for deletion')
+
+        return jsonify({"message": "Address deleted successfully"}), 200
         
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
