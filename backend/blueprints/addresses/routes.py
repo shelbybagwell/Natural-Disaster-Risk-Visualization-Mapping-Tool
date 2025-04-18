@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
+from pymongo.errors import DuplicateKeyError, PyMongoError
 from datetime import datetime
 from bson.objectid import ObjectId
 from helpers.address_helper import AddressHelper
@@ -36,7 +37,7 @@ def create_user_address(user_id):
 
         # Validate address
         if data["street_1"] == '' :
-            raise Exception('Street address is required.')
+            raise Exception('Street address is required')
         elif not AddressHelper.is_valid_street(data["street_1"]):
             raise Exception('Please limit each street address to 100 characters')
 
@@ -47,22 +48,22 @@ def create_user_address(user_id):
             data["street_2"] = ""
 
         if data["city"] == '' :
-            raise Exception('City is required.')
+            raise Exception('City is required')
         elif not AddressHelper.is_valid_city(data["city"]):
             raise Exception('Please provide a valid city')
 
         if data["state"] == '' :
-            raise Exception('State is required.')
+            raise Exception('State is required')
         elif not AddressHelper.is_valid_state(data["state"]):
             raise Exception('Please provide a valid state')
 
         if data["zip"] == '' :
-            raise Exception('Zip Code is required.')
+            raise Exception('Zip Code is required')
         elif not AddressHelper.is_valid_zip_code(data["zip"]):
             raise Exception('Please provide a valid zip code')
         
         if data["address_name"] == '' :
-            raise Exception('Address Name is required.')
+            raise Exception('Address Name is required')
         elif not AddressHelper.is_valid_zip_code(data["zip"]):
             raise Exception('Please provide a valid name for this address')
 
@@ -72,12 +73,16 @@ def create_user_address(user_id):
             data["is_primary"] == False
 
         # Addresses will be limited to US for now 
-        data["country"] = 'US'
+        data["country"] = 'USA'
 
         # TO DO: validate address by converting to lat/long coordinates
         strAddress = data["street_1"] + data["street_2"] + ', ' + data["city"] + ', ' + data["state"] + ' ' + data["zip"]
-        geolocator = Nominatim(user_agent='user_address')
+        geolocator = Nominatim(user_agent='user_address', timeout=5)
         location = geolocator.geocode(strAddress)
+
+        if (location is None):
+            raise Exception('Unable to verify this address')
+
         longitude = location.longitude
         latitude = location.latitude
 
@@ -106,11 +111,14 @@ def create_user_address(user_id):
 
         return jsonify({
             "message": "Address created successfully", 
-            "user": Address
+            "address": Address
             }), 201
 
+    except PyMongoError as ex:
+        return jsonify({"error": "%s" % ex}), 400
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
+    
 
 # Update a user address by ID
 @addresses_blueprint.route('/<id>', methods=['PUT'])
@@ -192,9 +200,12 @@ def search():
             state = request.form.get('state')
             zip_code = request.form.get('zip')
 
+            # data = request.get_json()
+
             #geopy the address to get lon/lat
             strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
-            geolocator = Nominatim(user_agent='user_address')
+            # strAddress = data['street_address'] + ', ' + data['city'] + ', ' + data['state'] + ' ' + data['zip']
+            geolocator = Nominatim(user_agent='user_address', timeout=5)
             location = geolocator.geocode(strAddress)
             lon = location.longitude
             lat = location.latitude
