@@ -74,7 +74,7 @@ def create_user_address(user_id):
         data["country"] = 'USA'
 
         # Validate address by converting to lat/long coordinates
-        strAddress = AddressHelper.toString(data)
+        strAddress = data['street_1'] + ', ' + data['city'] + ', ' + data['state'] + ' ' + data['zip']
         geolocator = Nominatim(user_agent='user_address', timeout=5)
         location = geolocator.geocode(strAddress)
 
@@ -89,6 +89,7 @@ def create_user_address(user_id):
 
         mongo = current_app.mongo
         address_collection = mongo.db.addresses
+        packing_collection = mongo.db.packing
 
         Address = {
             "user_id": user_id,
@@ -107,9 +108,28 @@ def create_user_address(user_id):
         result = address_collection.insert_one(Address)
         Address["_id"] = str(result.inserted_id)
 
+        default_packing_list = {
+            "address_id": str(result.inserted_id),
+            "items": [
+                "Important Documents (IDs, passports, insurance, medical records)",
+                "Medications & Prescriptions",
+                "First Aid Kit",
+                "Multipurpose Tool",
+                "Water",
+                "Non-perishable food",
+                "Phone",
+                "Charger",
+                "Power Bank",
+                "Cash",
+                "Maps"
+            ]
+        }
+        packing = packing_collection.insert_one(default_packing_list)
+
         return jsonify({
             "message": "Address created successfully", 
-            "address": Address
+            "address": Address,
+            "packing": str(packing.inserted_id)
             }), 201
 
     except PyMongoError as ex:
@@ -228,7 +248,6 @@ def get_user_address_by_id(id):
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400
 
-
 # Fetch a list of user addresses by user ID
 @addresses_blueprint.route('/list/user/<user_id>', methods=['GET'])
 def get_addresses_by_user(user_id):
@@ -308,7 +327,6 @@ def search():
 
             #geopy the address to get lon/lat
             strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
-            # strAddress = data['street_address'] + ', ' + data['city'] + ', ' + data['state'] + ' ' + data['zip']
             geolocator = Nominatim(user_agent='user_address', timeout=5)
             location = geolocator.geocode(strAddress)
             lon = location.longitude
@@ -316,7 +334,6 @@ def search():
 
             #add db insert/check here for user if logged in
         
-
             #fire features nearby from FIRMS Api
             f = FIRMS_API_Client()
             area_bound = 5
