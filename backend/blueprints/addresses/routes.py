@@ -316,14 +316,22 @@ def search():
         case 'POST': #example of posting user input to backend and making a call to the api and returning data/alerts for that address
             #201 W Washington Blvd, Los Angeles, CA 90007 (Mcdonalds)
             
-            #get form data
-            street_address = request.form.get('street_address')
-            address_line2 = request.form.get('address_line2')
-            city = request.form.get('city')
-            state = request.form.get('state')
-            zip_code = request.form.get('zip')
+            if len(request.form) != 0:
+                #get form data
+                street_address = request.form.get('street_address')
+                address_line2 = request.form.get('address_line2')
+                city = request.form.get('city')
+                state = request.form.get('state')
+                zip_code = request.form.get('zip')
+            else:
+                data = request.get_json()
+                street_address = data['street_address']
+                address_line2 = data['address_line2']
+                city = data['city']
+                state = data['state']
+                zip_code = data['zip']
 
-            # data = request.get_json()
+            
 
             #geopy the address to get lon/lat
             strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
@@ -369,4 +377,4 @@ def search():
                 'latitude': lat,
                 'fire_data': address_data,
                 'county_alerts': alerts
-            })
+            }), 200

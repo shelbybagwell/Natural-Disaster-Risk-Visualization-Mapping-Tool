@@ -32,7 +32,7 @@ def get_packing_list_by_address_id(id):
         if not packing_list:
             raise Exception('Packing List not found')
         
-        return jsonify({"packing list": packing_list}), 200
+        return jsonify({"packing_list": packing_list}), 200
 
     except Exception as ex:
         return jsonify({"error": "%s" % ex}), 400

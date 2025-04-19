@@ -100,3 +100,16 @@ def test_create_address_success(client):
     assert "_id" in address
     assert address["_id"] != None
     
+def test_address_search(client):
+
+    address_data = {
+        "street_address" : "201 W Washington Blvd", 
+        "address_line2" : "", 
+        "city" : "Los Angeles", 
+        "state" : "CA", 
+        "zip" : "90007"
+    }
+
+    # Successful response should return HTTP code 201
+    response = client.post("/addresses/search", json=address_data)
+    assert response.status_code == 200
