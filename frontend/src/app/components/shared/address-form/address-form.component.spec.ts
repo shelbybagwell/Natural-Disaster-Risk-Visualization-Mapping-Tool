@@ -68,7 +68,7 @@ describe('AddressFormComponent', () => {
   });
 
   describe('cancel button', () => {
-    fit('should reset the form when cancel button is called', () => {
+    it('should reset the form when cancel button is called', () => {
       //arrange
       component.addressForm.setValue({
         streetAddress: '777 Lucky St',
