@@ -68,12 +68,25 @@ describe('AddressFormComponent', () => {
   });
 
   describe('cancel button', () => {
-    it('should reset the form when cancel button is called', () => {
+    fit('should reset the form when cancel button is called', () => {
       //arrange
+      component.addressForm.setValue({
+        streetAddress: '777 Lucky St',
+        city: 'Huntsville',
+        state: 'AL',
+        zip: '35757',
+      });
 
       //act
+      component.cancel();
 
       //assert
+      expect(component.addressForm.value).toEqual({
+        streetAddress: null,
+        city: null,
+        state: null,
+        zip: null,
+      });
     });
 
     it('should be disabled if form is clean', () => {
