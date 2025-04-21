@@ -112,4 +112,6 @@ def test_address_search(client):
 
     # Successful response should return HTTP code 201
     response = client.post("/addresses/search", json=address_data)
-    assert response.status_code == 200
+    keys = response.get_json().keys()
+    
+    assert response.status_code == 200 and 'fire_data' in keys and 'county_alerts' in keys
