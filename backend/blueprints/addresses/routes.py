@@ -298,83 +298,56 @@ def delete_user_address(id):
         return jsonify({"error": "%s" % ex}), 400
     
 
-@addresses_blueprint.route('/search', methods=['GET', 'POST'])
+@addresses_blueprint.route('/search', methods=['POST'])
 def search():
-    match request.method:
-        case 'GET': #this can be substituted for the angular front end was just using this as a placeholder and testing
-            return f'''
-                <h3>Enter your address: </h1>
-                <form method="post" action="/addresses/search">
-                    <input type="text" name="street_address" placeholder="Street Address" required /><br>
-                    <input type="text" name="address_line2" placeholder="Address Line 2 (optional)" /><br>
-                    <input type="text" name="city" placeholder="City" required /><br>
-                    <input type="text" name="state" placeholder="State" required /><br>
-                    <input type="text" name="zip" placeholder="ZIP Code" required /><br>
-                    <button type="submit">Submit</button>
-                </form>
-            '''
-        case 'POST': #example of posting user input to backend and making a call to the api and returning data/alerts for that address
-            #201 W Washington Blvd, Los Angeles, CA 90007 (Mcdonalds)
-            
-            if len(request.form) != 0:
-                #get form data
-                street_address = request.form.get('street_address')
-                address_line2 = request.form.get('address_line2')
-                city = request.form.get('city')
-                state = request.form.get('state')
-                zip_code = request.form.get('zip')
-            else:
-                data = request.get_json()
-                street_address = data['street_address']
-                address_line2 = data['address_line2']
-                city = data['city']
-                state = data['state']
-                zip_code = data['zip']
 
-            
+        data = request.get_json()
+        street_address = data['street_address']
+        address_line2 = data['address_line2']
+        city = data['city']
+        state = data['state']
+        zip_code = data['zip']
 
-            #geopy the address to get lon/lat
-            strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
-            geolocator = Nominatim(user_agent='user_address', timeout=5)
-            location = geolocator.geocode(strAddress)
-            lon = location.longitude
-            lat = location.latitude
+        #geopy the address to get lon/lat
+        strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
+        geolocator = Nominatim(user_agent='user_address', timeout=5)
+        location = geolocator.geocode(strAddress)
+        lon = location.longitude
+        lat = location.latitude
+    
+        #fire features nearby from FIRMS Api
+        f = FIRMS_API_Client()
+        area_bound = 5
+        address_data = f.get_data(bound=[lat + area_bound, lon - area_bound, lat - area_bound, lon + area_bound])
 
-            #add db insert/check here for user if logged in
+        #general alerts from NOAA_API
+        n = NOAA_API_Client()
+        zones = n.get_state_zone_ids(state=state)
+        county = location.raw['display_name'].split(',')
+        for c in county:
+            if 'county' in c.lower():
+                county = c.lower().replace('county', '').replace(' ', '')
         
-            #fire features nearby from FIRMS Api
-            f = FIRMS_API_Client()
-            area_bound = 5
-            address_data = f.get_data(bound=[lat + area_bound, lon - area_bound, lat - area_bound, lon + area_bound])
+        county_codes = []
+        for z in zones:
+            if county in z['name'].lower():
+                county_codes.append(z)
 
-            #general alerts from NOAA_API
-            n = NOAA_API_Client()
-            zones = n.get_state_zone_ids(state=state)
-            county = location.raw['display_name'].split(',')
-            for c in county:
-                if 'county' in c.lower():
-                    county = c.strip().lower()
-            
-            county_codes = []
-            for z in zones:
-                if county in z['name'].lower():
-                    county_codes.append(z)
+        alerts = []
+        for c in county_codes:
+            data = n.get_alerts_for_zone(c['zone_id'])
+            data['name'] = c['name']
+            alerts.append(data)
 
-            alerts = []
-            for c in county_codes:
-                data = n.get_alerts_for_zone(c['zone_id'])
-                data['name'] = c['name']
-                alerts.append(data)
-
-            return jsonify({
-                'full_address': strAddress,
-                'street_address': street_address,
-                'address_line2': address_line2,
-                'city': city,
-                'state': state,
-                'zip_code': zip_code,
-                'longitude': lon,
-                'latitude': lat,
-                'fire_data': address_data,
-                'county_alerts': alerts
-            }), 200
+        return jsonify({
+            'full_address': strAddress,
+            'street_address': street_address,
+            'address_line2': address_line2,
+            'city': city,
+            'state': state,
+            'zip_code': zip_code,
+            'longitude': lon,
+            'latitude': lat,
+            'fire_data': address_data,
+            'county_alerts': alerts
+        }), 200
