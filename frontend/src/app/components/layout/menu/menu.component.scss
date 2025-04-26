@@ -4,3 +4,23 @@
   display: flex;
   float: right;
 }
+
+
+.custom-dropdown {
+  position: absolute;   
+  top: 100%;            
+  right: 0;             
+  margin-top: 8px;
+  z-index: 1050;         
+  border: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+
+  .dropdown-item {
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
