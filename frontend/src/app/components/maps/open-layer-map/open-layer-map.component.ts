@@ -1,9 +1,16 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, SimpleChanges } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat, fromUserCoordinate } from 'ol/proj';
 import OSM from 'ol/source/OSM';
+import { from } from 'rxjs';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import Style from 'ol/style/Style';
+import Icon from 'ol/style/Icon';
 
 @Component({
   selector: 'app-open-layer-map',
@@ -14,6 +21,7 @@ import OSM from 'ol/source/OSM';
 export class OpenLayerMapComponent {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   @Input() centerPoint: number[] = [-119.4149, 36.7783];
+  @Input() mapData: any;
 
   map!: Map;
 
@@ -32,5 +40,29 @@ export class OpenLayerMapComponent {
         zoom: 8,
       }),
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges){
+    if(changes['mapData'] && this.mapData){
+      if(this.mapData.currentLocation){
+        this.map.getView().setCenter(fromLonLat(this.mapData.currentLocation));
+        const marker = new Feature(new Point(fromLonLat(this.mapData.currentLocation)));
+
+        marker.setStyle(new Style({
+          image: new Icon({
+            src: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+            scale: 0.05
+          })
+        }));
+
+        const markerLayer = new VectorLayer({
+          source: new VectorSource({
+            features: [marker]
+          })
+        });
+
+        this.map.addLayer(markerLayer);
+      }
+    }
   }
 }

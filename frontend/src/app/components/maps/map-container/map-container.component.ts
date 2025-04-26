@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { AddressFormComponent } from '../../shared/address-form/address-form.component';
 
 
@@ -9,5 +9,11 @@ import { AddressFormComponent } from '../../shared/address-form/address-form.com
   styleUrl: './map-container.component.scss'
 })
 export class MapContainerComponent {
+    mapData:any ={};
+    
+    handleAddressSelected(eventData: any){
+      console.log('map data', eventData);
+      this.mapData = eventData;
+    }
 
 }

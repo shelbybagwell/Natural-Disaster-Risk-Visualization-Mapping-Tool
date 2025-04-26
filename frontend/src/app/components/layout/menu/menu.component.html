@@ -1,6 +1,25 @@
-<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-  <mat-icon>more_vert</mat-icon>
-</button>
-<mat-menu id="menu" #menu="matMenu">
-  <button (click)="viewMap()">Map View</button>
-</mat-menu>
+<nav class="navbar navbar-expand-lg bg-transparent" style="height: 100%;">
+  <div class="container-fluid d-flex justify-content-end align-items-center position-relative">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown position-relative">
+        <a
+          class="nav-link text-dark p-0"
+          href="#"
+          id="navbarDropdownMenuLink"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          style="height: 48px; width: 48px; display: flex; align-items: center; justify-content: center;"
+        >
+          <i class="bi bi-list fs-1"></i>
+        </a>
+
+      
+        <div class="dropdown-menu custom-dropdown" aria-labelledby="navbarDropdownMenuLink">
+          <button class="dropdown-item" (click)="viewMap()">Map View</button>
+          <button class="dropdown-item" (click)="viewSavedAddresses()">Saved Addresses</button>
+          <button class="dropdown-item" (click)="logout()">Log Out</button>
+        </div>
+      </li>
+    </ul>
+  </div>
