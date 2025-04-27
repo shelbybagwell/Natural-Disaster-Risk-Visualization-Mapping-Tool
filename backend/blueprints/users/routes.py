@@ -13,17 +13,17 @@ def create_user():
 
         data = request.get_json()
 
-        required_fields = ["username", "password", "confirm_password", "email", "full_name"]
+        required_fields = ["email", "password", "confirm_password", "full_name"]
 
         for field in required_fields:
             if field not in data:
                 raise Exception(f'Whoops: {field} field is required')
 
         # Validate/sanitize input
-        if data["username"] == '':
-            raise Exception('Username is required.')
-        elif not UserHelper.is_valid_username(data["username"]):
-            raise Exception('Invalid username. Please use 4 to 50 characters: letters, numbers, underscores only...')
+        # if data["username"] == '':
+        #     raise Exception('Username is required.')
+        # elif not UserHelper.is_valid_username(data["username"]):
+        #     raise Exception('Invalid username. Please use 4 to 50 characters: letters, numbers, underscores only...')
 
         if data['full_name'] == '':
             raise Exception('Name is required.')
@@ -47,8 +47,8 @@ def create_user():
         users_collection = mongo.db.users
 
         # Ensure username/email is unique
-        if users_collection.find_one({"username": data["username"]}):
-            raise Exception(f'Username \'{data["username"]}\' already exists')
+        # if users_collection.find_one({"username": data["username"]}):
+        #     raise Exception(f'Username \'{data["username"]}\' already exists')
 
         if users_collection.find_one({"email": data["email"]}):
             raise Exception(f'The email address provided has already been used \'{data["email"]}\'')
@@ -56,9 +56,9 @@ def create_user():
         hashed_password = UserHelper.hash_password(data['password'])
         
         User = {
-            "username": data['username'],
-            "password": hashed_password,
+            # "username": data['username'],
             "email": data['email'],
+            "password": hashed_password,
             "full_name": data['full_name'],
             "created_at": datetime.now()
         }
@@ -77,7 +77,7 @@ def create_user():
         return jsonify({"error": "%s" % ex}), 400
 
 
-# Fetch a user account by username
+# Fetch a user account by username (email)
 @users_blueprint.route('/<username>', methods=['GET'])
 def get_user_by_username(username):
 
@@ -86,7 +86,7 @@ def get_user_by_username(username):
         mongo = current_app.mongo
         users_collection = mongo.db.users
 
-        User = users_collection.find_one({"username": username})
+        User = users_collection.find_one({"email": username})
 
         if not User:
             raise Exception('User not found')

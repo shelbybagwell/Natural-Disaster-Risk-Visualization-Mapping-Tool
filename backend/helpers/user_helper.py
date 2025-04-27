@@ -19,6 +19,9 @@ class UserHelper:
     def hash_password(password):
         return generate_password_hash(password)
     
+    def check_hashed_password(password1, password2):
+        return check_password_hash(password1, password2)
+    
     def sanitize_user_object(User):
                 
         if "password" in User:
