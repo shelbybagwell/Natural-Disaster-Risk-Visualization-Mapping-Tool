@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapContainerComponent } from './components/maps/map-container/map-container.component';
@@ -15,6 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { LoginComponent } from './components/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
@@ -25,7 +26,8 @@ import { HttpClientModule } from '@angular/common/http';
     MenuComponent,
     FooterComponent,
     OpenLayerMapComponent,
-    AddressFormComponent
+    AddressFormComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

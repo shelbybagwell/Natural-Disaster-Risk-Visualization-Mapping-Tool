@@ -19,6 +19,14 @@ export class MenuComponent {
   }
 
   viewMap(){
-    this.router.navigateByUrl("/");
+    this.router.navigateByUrl("/map");
+  }
+
+  viewSavedAddresses(){
+    this.router.navigateByUrl("/")
+  }
+
+  logout(){
+    this.router.navigateByUrl('/')
   }
 }
