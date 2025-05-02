@@ -36,7 +36,11 @@ def login():
         if not UserHelper.check_hashed_password(User['password'], password):
             raise Exception('The password you have entered in incorrect. Please try again.')
 
-        access_token = create_access_token(identity=email)
+        access_token = create_access_token(
+            identity=str(User['_id']),
+            additional_claims={"email": User['email'], "role": "user"}
+        )
+
         refresh_token = create_refresh_token(identity=email)
 
         response = jsonify({            
