@@ -11,20 +11,24 @@
                 <p class="text-muted mb-5">Please enter your information to sign up!</p>
         
                 <div class="form-outline form-dark mb-4">
-                <input formControlName="firstName" type="text" id="firstName" class="form-control form-control-lg" placeholder="First Name" />
+                <input formControlName="first_name" type="text" id="first_name" class="form-control form-control-lg" placeholder="First Name" />
                 </div>
 
                 <div class="form-outline form-dark mb-4">
-                <input formControlName="lastName" type="text" id="lastName" class="form-control form-control-lg" placeholder="Last Name" />
+                <input formControlName="last_name" type="text" id="last_name" class="form-control form-control-lg" placeholder="Last Name" />
                 </div>
 
                 <div class="form-outline form-dark mb-4">
-                <input formControlName="email" type="email" id="email" class="form-control form-control-lg" placeholder="Email" />
+                <input formControlName="email" type="email" id="email" class="form-control form-control-lg" placeholder="Email Address" />
                 </div>
 
                 <div class="form-outline form-dark mb-4">
                 <input formControlName="password" type="password" id="password" class="form-control form-control-lg" placeholder="Password" />
                 </div>
+
+                <div class="form-outline form-dark mb-4">
+                  <input formControlName="confirm_password" type="password" id="confirm_password" class="form-control form-control-lg" placeholder="Confirm Password" />
+                  </div>
         
                 <button type="submit" class="btn btn-dark btn-lg px-5">Submit</button>
               </div>

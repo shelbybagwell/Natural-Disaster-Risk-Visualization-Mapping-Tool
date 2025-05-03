@@ -27,6 +27,10 @@ export class MenuComponent {
   }
 
   logout(){
+
+    //Clear access token
+    localStorage.setItem('access_token', "");
+    
     this.router.navigateByUrl('/')
   }
 }
