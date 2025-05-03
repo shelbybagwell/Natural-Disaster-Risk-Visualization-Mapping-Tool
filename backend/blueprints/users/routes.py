@@ -13,7 +13,7 @@ def create_user():
 
         data = request.get_json()
 
-        required_fields = ["email", "password", "confirm_password", "full_name"]
+        required_fields = ["first_name", "last_name", "email", "password", "confirm_password"]
 
         for field in required_fields:
             if field not in data:
@@ -25,10 +25,15 @@ def create_user():
         # elif not UserHelper.is_valid_username(data["username"]):
         #     raise Exception('Invalid username. Please use 4 to 50 characters: letters, numbers, underscores only...')
 
-        if data['full_name'] == '':
-            raise Exception('Name is required.')
-        elif not UserHelper.is_valid_name(data['full_name']):
-            raise Exception('Invalid name. Use letters, hyphens, or apostrophes only.')
+        if data['first_name'] == '':
+            raise Exception('First name is required.')
+        elif not UserHelper.is_valid_name(data['first_name']):
+            raise Exception('Invalid first name. Use letters, hyphens, or apostrophes only.')
+
+        if data['last_name'] == '':
+            raise Exception('Last name is required.')
+        elif not UserHelper.is_valid_name(data['last_name']):
+            raise Exception('Invalid last name. Use letters, hyphens, or apostrophes only.')
 
         if data['email'] == '':
             raise Exception('Email is required.')
@@ -57,9 +62,10 @@ def create_user():
         
         User = {
             # "username": data['username'],
+            "first_name": data['first_name'],
+            "last_name": data['last_name'],
             "email": data['email'],
             "password": hashed_password,
-            "full_name": data['full_name'],
             "created_at": datetime.now()
         }
 

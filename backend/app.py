@@ -19,7 +19,7 @@ mongo = PyMongo(app)  # Initialize MongoDB connection
 app.mongo = mongo
 
 # Setup CORS to allow credentials (cookies)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True) #  origins=["http://localhost:4200"], 
 
 # Setup JWT
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')

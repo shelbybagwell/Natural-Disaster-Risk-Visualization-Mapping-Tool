@@ -23,7 +23,7 @@ export class LoginComponent {
     });
   }
 
-  login(): Promise<unknown> | undefined {
+  login() { //: Promise<unknown> | undefined
 
     //Clear access token
     localStorage.setItem('access_token', "");
@@ -35,7 +35,7 @@ export class LoginComponent {
       
     const { email, password } = this.loginForm.value;
 
-    return new Promise((resolve, reject) => {
+    //return new Promise((resolve, reject) => {
       this.http.post<any[]>(this.loginUrl, { email, password }).subscribe({
         next: (response: any) => {
 
@@ -50,7 +50,7 @@ export class LoginComponent {
         }, 
 
       });
-    });
+    //});
   }
 
   signUp(){
