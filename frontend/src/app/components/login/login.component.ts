@@ -31,4 +31,8 @@ export class LoginComponent {
       alert('Please fill in all required fields.');
     }
   }
+
+  signUp(){
+    this.router.navigate(['/signUp'])
+  }
 }
