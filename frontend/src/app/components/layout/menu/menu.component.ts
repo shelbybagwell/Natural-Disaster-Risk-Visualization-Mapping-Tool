@@ -23,7 +23,7 @@ export class MenuComponent {
   }
 
   viewSavedAddresses(){
-    this.router.navigateByUrl("/")
+    this.router.navigateByUrl("addresses")
   }
 
   logout(){
