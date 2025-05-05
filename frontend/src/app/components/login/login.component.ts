@@ -25,6 +25,7 @@ export class LoginComponent {
 
   login() { 
 
+
     //Clear access token
     localStorage.setItem('access_token', "");
 
