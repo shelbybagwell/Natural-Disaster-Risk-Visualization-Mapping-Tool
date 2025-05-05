@@ -92,12 +92,15 @@ export class AddressFormComponent {
 
   //add the python call to return polygon data and modal info
   async getPolygon(address: any) {
-    console.log(address);
+    const jsonAddress = JSON.stringify(address);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
 
     return new Promise((resolve, reject) => {
-      this.http.post<any[]>(POLYGON_URL, address).subscribe({
+      this.http.post<any[]>(POLYGON_URL, jsonAddress, {headers}).subscribe({
         next: (data) => {
-          if (data.length > 0) {
+          if (data) {
             console.log("Got fire data yay");
           } else {
             reject('No results found');
