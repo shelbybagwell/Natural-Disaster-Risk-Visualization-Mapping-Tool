@@ -1,0 +1,12 @@
+
+<div *ngFor="let address of addresses" class="card-spacing">
+    <div class="card">
+        <div class="card-header">
+            {{ address.title }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ address.address }}</h5>
+            <a [href]="address.link" class="btn btn-primary">Show fire map</a>
+        </div>
+    </div>
+</div>

@@ -6,3 +6,5 @@ requests
 geopy
 pykml
 pytest
+flask-jwt-extended
+flask_cors
