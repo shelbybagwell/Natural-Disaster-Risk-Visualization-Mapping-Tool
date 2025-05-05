@@ -23,7 +23,7 @@ export class LoginComponent {
     });
   }
 
-  login() { //: Promise<unknown> | undefined
+  login() { 
 
     //Clear access token
     localStorage.setItem('access_token', "");
@@ -35,22 +35,19 @@ export class LoginComponent {
       
     const { email, password } = this.loginForm.value;
 
-    //return new Promise((resolve, reject) => {
-      this.http.post<any[]>(this.loginUrl, { email, password }).subscribe({
-        next: (response: any) => {
+    this.http.post<any[]>(this.loginUrl, { email, password }).subscribe({
+      next: (response: any) => {
 
-          console.log(response);
+        console.log(response);
 
-          localStorage.setItem('access_token', response.access_token);
-          this.router.navigate(['/map']);
-        },
-        error: (data) => {
-          console.log(data.error?.error);
-          alert(data.error?.error);
-        }, 
-
-      });
-    //});
+        localStorage.setItem('access_token', response.access_token);
+        this.router.navigate(['/map']);
+      },
+      error: (data) => {
+        console.log(data.error?.error);
+        alert(data.error?.error);
+      }, 
+    });
   }
 
   signUp(){
