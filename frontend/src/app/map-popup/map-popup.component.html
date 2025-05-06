@@ -1,9 +1,12 @@
 <div class="popup-container">
     <a class="popup-close" (click)="close.emit()">x</a>
     <div>
-        <strong>Info</strong><br>
+        <strong>Fire Detection</strong><br>
+        Wildfire possibly detected by NASA's MODIS.<br>
+        Confirm with local emergency services<br>
         Latitude: {{ data?.Latitude }}<br>
         Longitude: {{ data?.Longitude }}<br>
+        Detection Time: {{ (data?.DetectionTime)}}<br>
         Confidence: {{ (data?.['Confidence[0-100%]'] || 0) * 100 | number:'1.0-0' }}%
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, SimpleChanges, ViewContainerRef, ComponentRef } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -11,6 +11,8 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
+import Overlay from 'ol/Overlay';
+import { MapPopupComponent } from '../../../map-popup/map-popup.component';
 
 @Component({
   selector: 'app-open-layer-map',
@@ -20,10 +22,13 @@ import Icon from 'ol/style/Icon';
 })
 export class OpenLayerMapComponent {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('popupContainer', {read: ViewContainerRef}) popupContainer!: ViewContainerRef;
   @Input() centerPoint: number[] = [-119.4149, 36.7783];
   @Input() mapData: any;
 
   map!: Map;
+  popupOverlay!: Overlay;
+  popupComponentRef!: ComponentRef<MapPopupComponent> | null;
 
   ngOnInit(): void {}
 
@@ -39,6 +44,45 @@ export class OpenLayerMapComponent {
         center: fromLonLat(this.centerPoint),
         zoom: 8,
       }),
+    });
+    this.popupOverlay = new Overlay({
+      element: document.getElementById('popup')!,
+      autoPan: {
+        animation: {
+          duration: 250,
+        },
+      },
+    });
+    this.map.addOverlay(this.popupOverlay);
+
+    this.map.on('singleclick', (event) => {
+      const features = this.map.getFeaturesAtPixel(event.pixel);
+      if (features && features.length > 0) {
+        const feature = features[0];
+        const coords = (feature.getGeometry() as Point).getCoordinates();
+        const data = feature.get('data');
+
+        if (data) {
+          this.popupContainer.clear();
+
+          const popupRef = this.popupContainer.createComponent(MapPopupComponent);
+          popupRef.instance.data = data;
+          popupRef.instance.close.subscribe(() => {
+            this.popupOverlay.setPosition(undefined);
+            this.popupContainer.clear();
+          });
+
+          this.popupComponentRef = popupRef;
+          const popupEl = popupRef.location.nativeElement;
+          document.getElementById('popup')!.appendChild(popupEl);
+
+          this.popupOverlay.setPosition(coords);
+        }
+        else {
+          this.popupOverlay.setPosition(undefined);
+          this.popupContainer.clear();
+        }
+      }
     });
   }
 
@@ -87,6 +131,7 @@ export class OpenLayerMapComponent {
             scale: 0.05
           })
         }));
+        fireMarker.set('data', footprint.description);
 
         const fireMarkerLayer = new VectorLayer({
           source: new VectorSource({
