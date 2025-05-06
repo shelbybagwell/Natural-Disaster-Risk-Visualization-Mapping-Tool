@@ -162,16 +162,12 @@ export class OpenLayerMapComponent {
         // });
         // this.map.addLayer(fireMarkerLayer);
 
-
-        // This code below is if we want multiple footprints later
         let kept_footprints: any[] = [];
         potential_footprints.forEach((element: any) => {
           if (element.description["Confidence[0-100%]"] >= 0.5) {
             kept_footprints.push(element)
           }
         });
-
-        console.log(kept_footprints)
 
         const features = kept_footprints.map(fp => {
           const fireMarker = new Feature(new Point(fromLonLat([fp.description.Longitude, fp.description.Latitude])));
@@ -184,7 +180,6 @@ export class OpenLayerMapComponent {
           fireMarker.set('data', footprint.description);
           return fireMarker;
         });
-        console.log(features)
         const footprintLayer = new VectorLayer({
           source: new VectorSource({
             features: features
@@ -192,6 +187,34 @@ export class OpenLayerMapComponent {
         });
 
         this.map.addLayer(footprintLayer);
+
+        const polygons = kept_footprints.map(fp => {
+          const coordinates = [
+              [
+                fromLonLat(fp.Polygon[0].slice(0,2)),
+                fromLonLat(fp.Polygon[1].slice(0,2)),
+                fromLonLat(fp.Polygon[2].slice(0,2)),
+                fromLonLat(fp.Polygon[3].slice(0,2)),
+                fromLonLat(fp.Polygon[4].slice(0,2))
+              ]
+            ];
+            const polygon = new Polygon(coordinates);
+            const polyFeature = new Feature(polygon);
+            polyFeature.setStyle(new Style({
+              stroke: new Stroke({
+                color: 'red',
+                width: 2
+              })
+            }));
+            return polyFeature;
+        });
+        const polygonLayer = new VectorLayer({
+          source: new VectorSource({
+            features: polygons
+          })
+        });
+
+        this.map.addLayer(polygonLayer);
       }
     }
   }
