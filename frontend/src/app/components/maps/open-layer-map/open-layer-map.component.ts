@@ -4,7 +4,7 @@ import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat, fromUserCoordinate } from 'ol/proj';
 import OSM from 'ol/source/OSM';
-import { from } from 'rxjs';
+import { elementAt, from } from 'rxjs';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
@@ -62,6 +62,49 @@ export class OpenLayerMapComponent {
         });
 
         this.map.addLayer(markerLayer);
+      }
+      if (this.mapData.fireData){
+        let alerts = this.mapData.fireData.county_alerts[0]; // get most recent alert
+        let potential_footprints = this.mapData.fireData.fire_data;
+        
+        potential_footprints.forEach((element: any) => {
+          let confidenceString = element.description["Confidence[0-100%]"];
+          const percentage = parseFloat(confidenceString);
+          let confidence = percentage/100;
+          element.description["Confidence[0-100%]"] = confidence;
+        });
+        let footprint = potential_footprints.reduce((prev : any, curr : any) => {
+          return (curr.description["Confidence[0-100%]"] >= prev.description["Confidence[0-100%]"] ? curr : prev);
+        });
+        console.log(footprint.description.Latitude);
+        console.log(footprint.description.Longitude);
+
+        const fireMarker = new Feature(new Point(fromLonLat([footprint.description.Longitude, footprint.description.Latitude])));
+
+        fireMarker.setStyle(new Style({
+          image: new Icon({
+            src: "https://cdn-icons-png.flaticon.com/512/1453/1453025.png",
+            scale: 0.05
+          })
+        }));
+
+        const fireMarkerLayer = new VectorLayer({
+          source: new VectorSource({
+            features: [fireMarker]
+          })
+        });
+
+        this.map.addLayer(fireMarkerLayer);
+        // This code below is if we want multiple footprints later
+        // let kept_footprints: any[] = [];
+        // potential_footprints.forEach((element: any) => {
+        //   let confidenceString = element.description["Confidence[0-100%]"];
+        //   const percentage = parseFloat(confidenceString);
+        //   let confidence = percentage/100;
+        //   if (confidence >= 0.5) {
+        //     kept_footprints.push(element)
+        //   }
+        // });
       }
     }
   }

@@ -32,7 +32,7 @@ export class AddressFormComponent {
 
   lookUp(entry: FormGroup){
     let geoCodeData: any;
-    let polygonData;
+    let polygonData: any;
     if (this.addressForm.invalid) {
       alert("Please fill in all required fields.");
       return;
@@ -43,12 +43,13 @@ export class AddressFormComponent {
         this.getGeocode(address),
         // ADD PYHON CALL HERE FOR POLYGON DATA
         this.getPolygon(address)
-      ]).then(([rtnGeoData ]) => {
+      ]).then(([rtnGeoData, rtnPolygonData ]) => {
         geoCodeData = rtnGeoData;
+        polygonData = rtnPolygonData;
       }).then(() => {
         this.addressSelected.emit({
           currentLocation: geoCodeData,
-          fireData: null
+          fireData: polygonData
         })
       }).catch((error) => {
         console.error('Error fetching data:', error);
@@ -101,7 +102,7 @@ export class AddressFormComponent {
       this.http.post<any[]>(POLYGON_URL, jsonAddress, {headers}).subscribe({
         next: (data) => {
           if (data) {
-            console.log("Got fire data yay");
+            resolve(data)
           } else {
             reject('No results found');
           }
