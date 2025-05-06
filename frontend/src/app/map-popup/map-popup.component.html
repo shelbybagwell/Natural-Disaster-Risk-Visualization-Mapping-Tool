@@ -1,0 +1,9 @@
+<div class="popup-container">
+    <a class="popup-close" (click)="close.emit()">x</a>
+    <div>
+        <strong>Info</strong><br>
+        Latitude: {{ data?.Latitude }}<br>
+        Longitude: {{ data?.Longitude }}<br>
+        Confidence: {{ (data?.['Confidence[0-100%]'] || 0) * 100 | number:'1.0-0' }}%
+    </div>
+</div>
