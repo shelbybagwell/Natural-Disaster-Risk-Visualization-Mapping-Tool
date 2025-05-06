@@ -13,6 +13,8 @@ import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
 import Overlay from 'ol/Overlay';
 import { MapPopupComponent } from '../../../map-popup/map-popup.component';
+import { Polygon } from 'ol/geom';
+import Stroke from 'ol/style/Stroke';
 
 @Component({
   selector: 'app-open-layer-map',
@@ -120,11 +122,32 @@ export class OpenLayerMapComponent {
         let footprint = potential_footprints.reduce((prev : any, curr : any) => {
           return (curr.description["Confidence[0-100%]"] >= prev.description["Confidence[0-100%]"] ? curr : prev);
         });
-        console.log(footprint.description.Latitude);
-        console.log(footprint.description.Longitude);
+        
+        const coordinates = [
+          [
+            fromLonLat(footprint.Polygon[0].slice(0,2)),
+            fromLonLat(footprint.Polygon[1].slice(0,2)),
+            fromLonLat(footprint.Polygon[2].slice(0,2)),
+            fromLonLat(footprint.Polygon[3].slice(0,2)),
+            fromLonLat(footprint.Polygon[4].slice(0,2))
+          ]
+        ];
+        const polygon = new Polygon(coordinates);
+        const polyFeature = new Feature(polygon);
+        polyFeature.setStyle(new Style({
+          stroke: new Stroke({
+            color: 'red',
+            width: 2,
+          })
+        }));
+        const polyVectorLayer = new VectorLayer({
+          source: new VectorSource({
+            features: [polyFeature]
+          })
+        });
+        this.map.addLayer(polyVectorLayer);
 
         const fireMarker = new Feature(new Point(fromLonLat([footprint.description.Longitude, footprint.description.Latitude])));
-
         fireMarker.setStyle(new Style({
           image: new Icon({
             src: "https://cdn-icons-png.flaticon.com/512/1453/1453025.png",
@@ -132,13 +155,11 @@ export class OpenLayerMapComponent {
           })
         }));
         fireMarker.set('data', footprint.description);
-
         const fireMarkerLayer = new VectorLayer({
           source: new VectorSource({
             features: [fireMarker]
           })
         });
-
         this.map.addLayer(fireMarkerLayer);
         // This code below is if we want multiple footprints later
         // let kept_footprints: any[] = [];
