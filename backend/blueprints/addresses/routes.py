@@ -23,29 +23,22 @@ def create_user_address(user_id):
 
         data = request.get_json()
 
-        # Required fields: street_1, city, state, zip, country, latitude, longitude, address_name, is_primary
-        # Optional fields: street_2
+        # Required fields: street_address, city, state, zip, country, latitude, longitude, address_name, is_primary
 
         if not user_id:
             raise Exception('Invalid user ID')
 
-        required_fields = ["street_1", "city", "state", "zip", "country", "address_name", "is_primary"]
+        required_fields = ["street_address", "city", "state", "zip", "country", "address_name", "is_primary"]
 
         for field in required_fields:
             if field not in data:
                 raise Exception(f'Whoops: {field} field is required')
 
         # Validate address
-        if data["street_1"] == '' :
+        if data["street_address"] == '' :
             raise Exception('Street address is required')
-        elif not AddressHelper.is_valid_street(data["street_1"]):
+        elif not AddressHelper.is_valid_street(data["street_address"]):
             raise Exception('Please limit each street address to 100 characters')
-
-        if data["street_2"]:
-            if not AddressHelper.is_valid_street(data["street_2"]):
-                raise Exception('Please limit each street address to 100 characters')
-        else:
-            data["street_2"] = ""
 
         if data["city"] == '' :
             raise Exception('City is required')
@@ -74,9 +67,9 @@ def create_user_address(user_id):
         data["country"] = 'USA'
 
         # Validate address by converting to lat/long coordinates
-        strAddress = data['street_1'] + ', ' + data['city'] + ', ' + data['state'] + ' ' + data['zip']
+        fullAddress = data['street_address'] + ', ' + data['city'] + ', ' + data['state'] + ' ' + data['zip']
         geolocator = Nominatim(user_agent='user_address', timeout=5)
-        location = geolocator.geocode(strAddress)
+        location = geolocator.geocode(fullAddress)
 
         if (location is None):
             raise Exception('Unable to verify this address')
@@ -93,8 +86,7 @@ def create_user_address(user_id):
 
         Address = {
             "user_id": user_id,
-            "street_1": data["street_1"],
-            "street_2": data["street_2"],
+            'street_address': data["street_address"],
             "city": data["city"],
             "state": data["state"],
             "zip": data["zip"],
@@ -157,19 +149,12 @@ def update_user_address(id):
         if not Address:
             raise Exception('Address not found')
 
-        if "street_1" in data:
+        if "street_address" in data:
 
-            if not AddressHelper.is_valid_street(data['street_1']):
+            if not AddressHelper.is_valid_street(data['street_address']):
                 raise Exception('Please limit each street address to 100 characters')
             
-            Address["street_1"] = data["street_1"]
-
-        if "street_2" in data:
-
-            if not AddressHelper.is_valid_street(data['street_2']):
-                raise Exception('Please limit each street address to 100 characters')
-            
-            Address["street_2"] = data["street_2"]
+            Address["street_address"] = data["street_address"]
 
         if "city" in data:
 
@@ -260,7 +245,7 @@ def get_addresses_by_user(user_id):
         mongo = current_app.mongo
         address_collection = mongo.db.addresses
 
-        addresses = list(address_collection.find({"user_id": ObjectId(user_id)}))
+        addresses = list(address_collection.find({"user_id": user_id}))
 
         # Convert ObjectId fields to strings for JSON serialization
         if addresses:
@@ -268,18 +253,22 @@ def get_addresses_by_user(user_id):
                 addr["_id"] = str(addr["_id"])
                 addr["user_id"] = str(addr["user_id"])
 
-        return jsonify({"data": addresses}), 200
+        return jsonify({
+            "data": addresses,
+            "error": ""
+            }), 200
 
     except Exception as ex:
-        return jsonify({"error": "%s" % ex}), 400
+        return jsonify({
+            "data": None, 
+            "error": "%s" % ex, 
+            }), 400
 
 # Delete a user address by ID
 @addresses_blueprint.route('/<id>', methods=['DELETE'])
 def delete_user_address(id):
 
     try:    
-
-        data = request.get_json()
 
         if not id:
             raise Exception('Invalid Address ID')
@@ -309,9 +298,9 @@ def search():
         zip_code = data['zip']
 
         #geopy the address to get lon/lat
-        strAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
+        fullAddress = street_address + ', ' + city + ', ' + state + ' ' + zip_code
         geolocator = Nominatim(user_agent='user_address', timeout=5)
-        location = geolocator.geocode(strAddress)
+        location = geolocator.geocode(fullAddress)
         lon = location.longitude
         lat = location.latitude
     
@@ -340,7 +329,7 @@ def search():
             alerts.append(data)
 
         return jsonify({
-            'full_address': strAddress,
+            'full_address': fullAddress,
             'street_address': street_address,
             'address_line2': address_line2,
             'city': city,
