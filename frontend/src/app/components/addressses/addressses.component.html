@@ -2,10 +2,20 @@
 <div *ngFor="let address of addresses" class="card-spacing">
     <div class="card">
         <div class="card-header">
-            {{ address.title }}
+            <div class="d-flex justify-content-between">
+                {{ address.title }}
+                <button 
+                type="button" 
+                class="btn-close" 
+                [attr.data-id]="address.id"
+                (click)="deleteUserAddress($event)"></button>
+            </div>
         </div>
         <div class="card-body">
             <h5 class="card-title">{{ address.address }}</h5>
+            <div class="pb-2">
+                <span class="text-secondary">{{ address.latitude }}, {{ address.longitude }}</span>
+            </div>
             <a [href]="address.link" class="btn btn-primary">Show fire map</a>
         </div>
     </div>

@@ -1,8 +1,8 @@
 <div class="addressFormContainer">
   <form mat-form class="addressForm" (ngSubmit)="lookUp(addressForm)" [formGroup]="addressForm">
-    <mat-form-field class="streetAddress" appearance="fill">
+    <mat-form-field class="street_address" appearance="fill">
       <mat-label>Address</mat-label>
-      <input matInput maxlength="46" type="text" formControlName="streetAddress" required>
+      <input matInput maxlength="46" type="text" formControlName="street_address" required>
     </mat-form-field>
 
     <mat-form-field class="city">

@@ -19,7 +19,7 @@ export class AddressFormComponent {
 
   constructor() {
     this.addressForm = this.fb.group({
-      streetAddress: ['', [Validators.required]],
+      street_address: ['', [Validators.required]],
       city: ['', []],
       state: ['', []],
       zip: ['', [Validators.required]]
@@ -54,7 +54,7 @@ export class AddressFormComponent {
   // builds address object for callouts
   buildAddress(formGroup: FormGroup){
     const address = {
-      street: formGroup.get('streetAddress')?.value,
+      street: formGroup.get('street_address')?.value,
       city: formGroup.get('city')?.value,
       state: formGroup.get('state')?.value,
       zip: formGroup.get('zip')?.value
