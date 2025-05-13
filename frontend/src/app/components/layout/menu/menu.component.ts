@@ -23,10 +23,14 @@ export class MenuComponent {
   }
 
   viewSavedAddresses(){
-    this.router.navigateByUrl("/")
+    this.router.navigateByUrl("addresses")
   }
 
   logout(){
+
+    //Clear access token
+    localStorage.setItem('access_token', "");
+    
     this.router.navigateByUrl('/')
   }
 }
