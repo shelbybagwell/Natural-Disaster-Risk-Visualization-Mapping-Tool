@@ -2,8 +2,11 @@ import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Address } from '../../../interfaces/address';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { add, format } from 'ol/coordinate';
+// import { ApiService } from '../../../services/api.service';
 
 const GEO_URL = 'https://nominatim.openstreetmap.org/search';
+const POLYGON_URL = 'http://localhost:5001/addresses/search';
 
 @Component({
   selector: 'app-address-form',
@@ -20,15 +23,16 @@ export class AddressFormComponent {
   constructor() {
     this.addressForm = this.fb.group({
       street_address: ['', [Validators.required]],
-      city: ['', []],
-      state: ['', []],
+      address_line2: ['', []],
+      city: ['', [Validators.required]],
+      state: ['', [Validators.required]],
       zip: ['', [Validators.required]]
     });
   }
 
   lookUp(entry: FormGroup){
     let geoCodeData: any;
-    let polygonData;
+    let polygonData: any;
     if (this.addressForm.invalid) {
       alert("Please fill in all required fields.");
       return;
@@ -36,14 +40,16 @@ export class AddressFormComponent {
       let address = this.buildAddress(entry);
       // creating the big promise for both geocode and polygon data
       Promise.all([
-        this.getGeocode(address)
+        this.getGeocode(address),
         // ADD PYHON CALL HERE FOR POLYGON DATA
-      ]).then(([rtnGeoData ]) => {
+        this.getPolygon(address)
+      ]).then(([rtnGeoData, rtnPolygonData ]) => {
         geoCodeData = rtnGeoData;
+        polygonData = rtnPolygonData;
       }).then(() => {
         this.addressSelected.emit({
           currentLocation: geoCodeData,
-          fireData: null
+          fireData: polygonData
         })
       }).catch((error) => {
         console.error('Error fetching data:', error);
@@ -54,7 +60,8 @@ export class AddressFormComponent {
   // builds address object for callouts
   buildAddress(formGroup: FormGroup){
     const address = {
-      street: formGroup.get('street_address')?.value,
+      street_address: formGroup.get('street_address')?.value,
+      address_line2: formGroup.get('addressLine2')?.value,
       city: formGroup.get('city')?.value,
       state: formGroup.get('state')?.value,
       zip: formGroup.get('zip')?.value
@@ -85,6 +92,25 @@ export class AddressFormComponent {
   }
 
   //add the python call to return polygon data and modal info
+  async getPolygon(address: any) {
+    const jsonAddress = JSON.stringify(address);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return new Promise((resolve, reject) => {
+      this.http.post<any[]>(POLYGON_URL, jsonAddress, {headers}).subscribe({
+        next: (data) => {
+          if (data) {
+            resolve(data)
+          } else {
+            reject('No results found');
+          }
+        },
+        error: (error) => reject(error)
+      });
+    });
+  }
 
   save(entry: Address){}
 
